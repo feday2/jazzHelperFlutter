@@ -90,8 +90,8 @@ class MyHomePageState extends State<MyHomePage> {
               setState(() {
                  selectedScaleInfo = createScaleInfo(selectedScale, selectedNote); // Оновлюємо текст при натисканні кнопки
               });
-              print('Selected Scale ID: ${selectedScale.id}');
-              print('Selected Note ID: ${selectedNote.id}');
+              // print('Selected Scale ID: ${selectedScale.id}');
+              // print('Selected Note ID: ${selectedNote.id}');
             },
             child: Text('Next'),
           ),
