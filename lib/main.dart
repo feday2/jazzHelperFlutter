@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'data/notes_scales.dart';
 import 'models/dropdown_item.dart';
 import 'components/dropdown_button.dart';
+import 'components/scale_info.dart';
 
 void main() {
   runApp(MyApp());
@@ -39,13 +40,14 @@ class MyAppState extends ChangeNotifier {
 
 class MyHomePage extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   late DropdownItem selectedScale; // Для першого випадаючого списку
   late DropdownItem selectedNote;  // Для другого випадаючого списку
+  ScaleInfo selectedScaleInfo = createScaleInfo(scales.first, notes.first);
 
 @override
   void initState() {
@@ -60,8 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Column(
         children: [
-          Text(''),
-          Text(''),
+          SizedBox(height: 50),
           Row(
             mainAxisAlignment: MainAxisAlignment.center, // Вирівнювання по центру
             children: [
@@ -86,13 +87,43 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           ElevatedButton(
             onPressed: () {
+              setState(() {
+                 selectedScaleInfo = createScaleInfo(selectedScale, selectedNote); // Оновлюємо текст при натисканні кнопки
+              });
               print('Selected Scale ID: ${selectedScale.id}');
               print('Selected Note ID: ${selectedNote.id}');
             },
             child: Text('Next'),
+          ),
+          SizedBox(height: 20),
+          Container(
+            width: MediaQuery.of(context).size.width - 20, // Встановлюємо ширину
+            // height: 100, // Встановлюємо висоту
+            decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 26, 138, 182), // Колір контейнера
+                borderRadius: BorderRadius.circular(15), // Круглі краї
+            ),
+            padding: EdgeInsets.all(20), // Внутрішні відступи (padding) 20 пікселів з усіх боків
+            child: Column(
+              children: [
+              Text(
+                selectedScaleInfo.chord,// 'Сmaj7',
+              ),
+              Text(
+                selectedScaleInfo.notes// 'C D E F G A H',
+              ),
+              Text(
+                selectedScaleInfo.extra,
+            ),],)
           ),
         ],
       ),
     );
   }
 }
+
+
+
+
+
+
