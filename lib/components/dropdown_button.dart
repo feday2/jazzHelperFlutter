@@ -29,10 +29,10 @@ class _DropdownButtonCustomState extends State<DropdownButtonCustom> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<DropdownItem>(
+      itemHeight: 60,
       value: dropdownValue,
-      icon: const Icon(Icons.arrow_downward),
-      elevation: 16,
-      style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+      icon: SizedBox.shrink(),
+      alignment: Alignment.center,
       underline: Container(
         height: 2,
         color: const Color.fromARGB(255, 255, 255, 255),
@@ -49,7 +49,9 @@ class _DropdownButtonCustomState extends State<DropdownButtonCustom> {
           value: item,
           child: Text(
             item.name,
-            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)), // Колір тексту випадаючого списку,
+            style: const TextStyle(
+              color: Color.fromARGB(255, 255, 255, 255),
+              fontSize: 38,), // Колір тексту випадаючого списку,
            ), 
         );
       }).toList(),

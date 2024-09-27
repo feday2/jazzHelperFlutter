@@ -15,16 +15,22 @@ class ScaleInfo {
 
 ScaleInfo createScaleInfo(DropdownItem scale, DropdownItem mainNote) {
   // Ви можете задати значення для поля 'extra' відповідно до вашої логіки
-  String extra = "You select scale id = ${scale.id} and main note id = ${mainNote.id}" ; // Приклад
+  // String extra = "You select scale id = ${scale.id} and main note id = ${mainNote.id}" ; // Приклад
   return ScaleInfo(
     chord: getMainChord(scale, mainNote),
     notes: getNotesOfScale(scale, mainNote),
-    extra: extra,
+    extra: getStepsInfo(scale),
   );
 }
 
+getStepsInfo(DropdownItem scale) {
+  const List<String> stepsProperNames = ["1","b2","2","b3","3","4","b5","5","#5","6","b7","7"];
+
+  return scale.steps.map((index) => stepsProperNames[index -1]).join(' ');
+}
+
 getNotesOfScale(DropdownItem scale, DropdownItem mainNote) {
-  var selectedNotes = scale.steps.map((index) => notes[(index - 2 + int.parse(mainNote.id))%12].name).join(', ');
+  var selectedNotes = scale.steps.map((index) => allNotes[(index - 2 + int.parse(mainNote.id))%12].name).join(', ');
   return selectedNotes;
 }
 
@@ -37,7 +43,7 @@ getMainChord(DropdownItem scale, DropdownItem mainNote) {
 
   print(chordSteps);
 
-  var chordNotes = chordSteps.map((index) => notes[(index - 2 + int.parse(mainNote.id))%12].name).join(', ');
+  var chordNotes = chordSteps.map((index) => allNotes[(index - 2 + int.parse(mainNote.id))%12].name).join(', ');
 
    String? foundChordName = chords
       .firstWhere(
@@ -47,6 +53,5 @@ getMainChord(DropdownItem scale, DropdownItem mainNote) {
       .name;
 
   return "${mainNote.name}$foundChordName ($chordNotes)";
-  
 }
 

@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Jazz helper',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 255, 255, 255)),
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
           textTheme: TextTheme(
             bodyLarge: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
             bodyMedium: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
-            ),
+          ),
         ),
         home: MyHomePage(),
       ),
@@ -43,18 +42,24 @@ class MyHomePage extends StatefulWidget {
   MyHomePageState createState() => MyHomePageState();
 }
 
-
-class MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   late DropdownItem selectedScale; // Для першого випадаючого списку
   late DropdownItem selectedNote;  // Для другого випадаючого списку
-  ScaleInfo selectedScaleInfo = createScaleInfo(scales.first, notes.first);
+  ScaleInfo selectedScaleInfo = createScaleInfo(scales.first, allNotes.first);
 
-@override
+  @override
   void initState() {
     super.initState();
-    // Ініціалізуємо вибрані значення
+    _tabController = TabController(length: 2, vsync: this); // 2 вкладки
     selectedScale = scales.first;
-    selectedNote = notes.first;
+    selectedNote = allNotes.first;
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,68 +67,104 @@ class MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Column(
         children: [
-          SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Вирівнювання по центру
-            children: [
-              DropdownButtonCustom( // Перший випадаючий список
-                items: scales,
-                onChanged: (DropdownItem value) {
-                  setState(() {
-                    selectedScale = value;
-                  });
-                },
-              ), 
-              SizedBox(width: 20), // Додаємо відступ між списками
-              DropdownButtonCustom( // Другий випадаючий список
-                items: notes,
-                onChanged: (DropdownItem value) {
-                  setState(() {
-                    selectedNote = value;
-                  });
-                },
-              ), 
-            ],
-          ),
-          ElevatedButton(
-            onPressed: () {
-              setState(() {
-                 selectedScaleInfo = createScaleInfo(selectedScale, selectedNote); // Оновлюємо текст при натисканні кнопки
-              });
-              // print('Selected Scale ID: ${selectedScale.id}');
-              // print('Selected Note ID: ${selectedNote.id}');
-            },
-            child: Text('Next'),
-          ),
-          SizedBox(height: 20),
-          Container(
-            width: MediaQuery.of(context).size.width - 20, // Встановлюємо ширину
-            // height: 100, // Встановлюємо висоту
-            decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 26, 138, 182), // Колір контейнера
-                borderRadius: BorderRadius.circular(15), // Круглі краї
+          TabBar(
+              controller: _tabController,
+              labelColor: Colors.white, // Текст активної вкладки білий
+              unselectedLabelColor: const Color.fromARGB(179, 255, 255, 255), // Текст неактивної вкладки трохи світліший
+              indicatorColor: const Color.fromARGB(255, 26, 138, 182), // Лінія під активною вкладкою жовта
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorWeight: 3.0,
+              tabs: [
+                SizedBox(
+                  height: 70.0, // Задайте висоту кнопки вкладки
+                  child: Center(child: Text('SCALES')), // Центруємо текст
+                ),
+                SizedBox(
+                  height: 70.0, // Задайте висоту кнопки вкладки
+                  child: Center(child: Text('Tab 2')), // Центруємо текст
+                ),
+              ],
             ),
-            padding: EdgeInsets.all(20), // Внутрішні відступи (padding) 20 пікселів з усіх боків
-            child: Column(
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
               children: [
-              Text(
-                selectedScaleInfo.chord,// 'Сmaj7',
-              ),
-              Text(
-                selectedScaleInfo.notes// 'C D E F G A H',
-              ),
-              Text(
-                selectedScaleInfo.extra,
-            ),],)
+                // Перша вкладка
+                Column(
+                  children: [
+                    SizedBox(height: 50),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center, // Вирівнювання по центру
+                      children: [
+                        Container(
+                          height: 70,
+                          constraints: BoxConstraints(
+                            minWidth: 100, // Задайте мінімальну ширину тут
+                          ),
+                          child: DropdownButtonCustom(// Перший випадаючий список
+                            items: scales,
+                            onChanged: (DropdownItem value) {
+                              setState(() {
+                                selectedScale = value;
+                                selectedScaleInfo = createScaleInfo(selectedScale, selectedNote);
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 20), // Додаємо відступ між списками
+                        Container(
+                          height: 70,
+                          constraints: BoxConstraints(
+                            minWidth: 100, // Задайте мінімальну ширину тут
+                          ),
+                          child: DropdownButtonCustom( // Другий випадаючий список
+                            items: allNotes,
+                            onChanged: (DropdownItem value) {
+                              setState(() {
+                                selectedNote = value;
+                                selectedScaleInfo = createScaleInfo(selectedScale, selectedNote);
+                              });
+                            },
+                          ),
+                        ), 
+                      ],
+                    ),
+                    SizedBox(height: 7),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 20, // Встановлюємо ширину
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 26, 138, 182), // Колір контейнера
+                        borderRadius: BorderRadius.circular(15), // Круглі краї
+                      ),
+                      padding: EdgeInsets.all(20), // Внутрішні відступи (padding) 20 пікселів з усіх боків
+                      child: Column(
+                        children: [
+                          Text(
+                            selectedScaleInfo.extra,
+                            style: TextStyle(fontSize: 24), // Задайте потрібний розмір шрифту
+                          ),
+                          Text(
+                            selectedScaleInfo.chord,
+                            style: TextStyle(fontSize: 24), // Задайте потрібний розмір шрифту
+                          ),
+                          Text(
+                            selectedScaleInfo.notes,
+                            style: TextStyle(fontSize: 24), // Задайте потрібний розмір шрифту
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // Друга вкладка
+                Center(
+                  child: Text('Another window in Tab 2'),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-
-
-
-
-
