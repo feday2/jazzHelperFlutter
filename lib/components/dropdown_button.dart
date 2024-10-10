@@ -29,6 +29,7 @@ class _DropdownButtonCustomState extends State<DropdownButtonCustom> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<DropdownItem>(
+      borderRadius:BorderRadius.circular(15),
       itemHeight: 60,
       value: dropdownValue,
       icon: SizedBox.shrink(),
